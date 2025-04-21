@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: tiktok_api
+    ports:
+      - "${PORT}:${PORT}"  # Đọc giá trị PORT từ file .env
+    depends_on:
+      - mysql
+    env_file:
+      - .env  # Load toàn bộ biến từ file .env
+    volumes:
+      - .:/app
+    command: ["node", "dist/index.js"]
+    restart: always
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: tiktokdb 
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: always
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - '8080:80'
+    depends_on:
+      - mysql
+    restart: always
+
+volumes:
+  mysql_data:
+
